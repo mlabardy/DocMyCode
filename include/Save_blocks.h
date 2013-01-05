@@ -10,8 +10,10 @@ typedef struct {
 	int size;
 }cell, *SaveTagArrays;
 
+int incrementOfOne(int *number);
 SaveTagArrays allocateNewCell(void);
-SaveTagArrays addNewCell(SaveTagArrays listOfTagArray);
+SaveTagArrays addNewCell1(SaveTagArrays listOfTagArray, int index);
+SaveTagArrays addNewCell(SaveTagArrays listOfTagArray, int* index);
 int displayTheListOfTheSavingTagArray(SaveTagArrays listOfTagArray);
 void freeSaveTagArray(SaveTagArrays listOfTagArray);
 

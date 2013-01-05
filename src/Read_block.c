@@ -77,7 +77,11 @@ int displayTagArray(TagArray arrayOfTags) {
 	fclose(text);
 	return 0;
 }
-
+/*
+void managingOptions() {
+	
+}
+*/
 int readFile(char* fileName) {
 	FILE* file = NULL;
  	char string[SIZE];
@@ -88,7 +92,7 @@ int readFile(char* fileName) {
  	int c = 0;
  	SaveTagArrays list = NULL;
  	initArrayOfInt(isEmpty, NB_TAGS+1);
- 	
+ 	list = allocateNewCell();
     file = fopen(fileName, "r");
  	if (file == NULL) {
     	return -1;
@@ -101,20 +105,25 @@ int readFile(char* fileName) {
  					over = OFF;
  					switch (string[i+1]) {
  						case '*' :
- 						 	if (string[i+2] == '*') {
- 						 		list = addNewCell(list);
+ 						 	if (string[i+2] == '*') {printf("c = %d\n", c);
+ 						 		list = addNewCell1(list, c);
  						 		initArrayOfInt(isEmpty, NB_TAGS+1);
  						 		block = START_TYPE_1;
- 						 		stringNull = OFF;
+ 						 		stringNull = ON;
+ 						 		previousIndex = OFF;
+ 						 		i += 2; 
  						 	}
  						break;
  						case '/' :
- 							if (string[i+2] == '/') {
+ 							if (string[i+2] == '/') {printf("c = %d\n", c);
+ 								list = addNewCell1(list, c);
 								block = START_TYPE_2;
- 						 		list = addNewCell(list);
+								initArrayOfInt(isEmpty, NB_TAGS+1);
+ 						 		stringNull = OFF;
 								if (string[i+3] == '\n') {
 									getInfo = 1;
 								}
+								i += 2;
 							}
  						break;
  					}
@@ -291,22 +300,22 @@ int readFile(char* fileName) {
  						break;
  					}
  				break;
- 				case 59 :
- 					if (list->arrayOfTags[c]->information[FN] == NULL) {
-	 					if (block == END && over == OFF) {
+ 				case ';' :
+ 					if (block == END && over == OFF) {
+ 						if (list->arrayOfTags[c]->information[FN] == NULL) {
 	 						for(j=0 ; j<i ;j++) {
 	 							fprintf(stdout, "%c", string[j]);
 	 							list->arrayOfTags[c] = stockInformation(list->arrayOfTags[c], string[j], FN, position);
 	 							position++;
 	 						}
 	 						over = ON;
-	 						
 	 					}
+	 					c++;
  					}
  				break;
  				case '{' :
- 					if (list->arrayOfTags[c]->information[FN] == NULL) {
-	 					if (block == END && over == OFF) {
+ 					if (block == END && over == OFF) {
+ 						if (list->arrayOfTags[c]->information[FN] == NULL) {
 	 						for(j=0 ; j<i ;j++) {
 	 							fprintf(stdout, "%c", string[j]);
 	 							list->arrayOfTags[c] = stockInformation(list->arrayOfTags[c], string[j], FN, position);
@@ -314,9 +323,8 @@ int readFile(char* fileName) {
 	 						}
 	 						over = ON;
 	 					}
+	 					c++;
  					}
- 				break;
- 				case '\n' :
  				break;
  				default :
  					if(getInfo == 1)	stringNull = 2;
@@ -340,7 +348,7 @@ int readFile(char* fileName) {
  								break;
  							}
  							if (previousTag == OFF) {
- 								if (stringNull != 2) {
+ 								if (stringNull != 2 && previousIndex != OFF) {printf("---------------------->    TEST\n");
 	 								index = previousIndex;
 	 								position = previousPosition;
 	 								position = putALineBreak(list->arrayOfTags[c], index, position);
@@ -407,6 +415,11 @@ int readFile(char* fileName) {
  			endOfParagraphStyle(list->arrayOfTags[c], index, position);
 			paragraphStyle = OFF;
  		}
+ 		/*if (over == ON) {
+ 			over = 2;
+ 			c++;
+ 			printf("C on\n");
+ 		}*/
  		previousIndex = index;
 		previousPosition = position;
 		position = 0;
@@ -414,11 +427,9 @@ int readFile(char* fileName) {
  		index = NB_TAGS;
  		stringNull = OFF;
  	}
- 	displayTheListOfTheSavingTagArray(list);
+ 	displayTagArray(list->arrayOfTags[1]);
+ 	/*displayTheListOfTheSavingTagArray(list);*/
  	freeSaveTagArray(list);
- 	/*freeTagArray(list->arrayOfTags[c]);
- 	free(list);
- 	list = NULL;*/
  	fclose(file);
  	return 0;
 }
