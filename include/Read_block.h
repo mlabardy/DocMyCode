@@ -7,7 +7,6 @@
 #include<dirent.h>
 #include<sys/types.h>
 
-
 #define NB_TAGS 10
 #define SIZE 200
 #define ON 1
@@ -24,13 +23,12 @@ typedef struct {
 }tagArray, *TagArray; 
 
 
-int searchInformations(char* string);
+int returnPosition(TagArray arrayOfTags, int index);
 char* createAnArrayOfChar(char* information, int size);
-int* initArrayOfInt(int* isEmpty, int size);
+void freeArrayOfChar(char* array);
 TagArray allocateNewTagArray(TagArray arrayOfTags);
-TagArray stockInformation(TagArray arrayOfTags, char c, int index, int position);
 void freeTagArray(TagArray arrayOfTags);
-int displayTagArray(TagArray arrayOfTags);
-int readFile(char* fileName);
+char* * allocateDoubleArrayOfChar(char* * array, int size);
+void freeDoubleArrayOfChar(char* * array, int size);
 
 #endif

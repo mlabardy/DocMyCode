@@ -3,17 +3,19 @@
 
 #include"Read_block.h"
 
-enum {Brief=6, DETAILS=4, Author=2, PARAM=7, RETURN=27, Date=25, FN=6, Bug=24, File=15, Version=28};
+enum {Brief=1, Details=4, Author=0, Param=7, Return=8, Date=3, Fn=6, Bug=2, File=5, Version=9, Struct=10};
 
 int recognizeATag(char* information, int index);
-int putInItalic(TagArray arrayOfTags, int index, int position);
-int endOfItalic(TagArray arrayOfTags, int index, int position);
-int putInTypeWriterStyle(TagArray arrayOfTags, int index, int position);
-int endOfTypeWriterStyle(TagArray arrayOfTags, int index, int position);
-int putInBoldStyle(TagArray arrayOfTags, int index, int position);
-int endOfBoldStyle(TagArray arrayOfTags, int index, int position);
-int putInParagraphStyle(TagArray arrayOfTags, int index, int position);
-int endOfParagraphStyle(TagArray arrayOfTags, int index, int position);
-int putALineBreak(TagArray arrayOfTags, int index, int position);
+int recognizeSecondaryTag(TagArray arrayOfTags, char* string, int index, int *position, int**i);
+int putEndToTag(TagArray arrayOfTags, int tmp, int index, int *position);
+void putInItalic(TagArray arrayOfTags, int index, int**position);
+void endOfItalic(TagArray arrayOfTags, int index, int**position);
+void putInTypeWriterStyle(TagArray arrayOfTags, int index, int**position);
+void endOfTypeWriterStyle(TagArray arrayOfTags, int index, int**position);
+void putInBoldStyle(TagArray arrayOfTags, int index, int**position);
+void endOfBoldStyle(TagArray arrayOfTags, int index, int**position);
+void putInParagraphStyle(TagArray arrayOfTags, int index, int**position);
+void endOfParagraphStyle(TagArray arrayOfTags, int index, int**position);
+void putALineBreak(TagArray arrayOfTags, int index, int**position);
 
 #endif

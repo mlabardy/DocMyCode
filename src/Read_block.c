@@ -1,6 +1,45 @@
 #include"Read_block.h"
-#include"Special_Tags.h"
-#include"Save_blocks.h"
+
+/**
+* \version			 \p \a 1.5	**
+  \date 			 \p december 2012
+* \author			 \p Martine
+* \details 			 \p This file contains every functions managing the arrays
+*/
+
+int returnPosition(TagArray arrayOfTags, int index);
+
+/**
+ * \fn 				\c int returnPosition( \c TagArray \a arrayOfTags, \c int \a index )
+ * \brief			Determine the last position in an array
+ * \param			\c TagArrays \a arrayOfTags  a block from the list of blocks of a file \B
+ * \param			\c int \a index  the index of a tag
+ * \version			\p 1.0
+ * \date 			\p December
+ * 					2012
+ * \author			\p Chaymae & Martine
+ * \details 		\p This function allows to determine the index of the end of the string
+ *					in a block of information for a tag \a index
+ */
+ 
+int returnPosition(TagArray arrayOfTags, int index) {
+	int position = 0;
+	while (arrayOfTags->information[index][position] != '\0') {
+		position++;
+	}
+	return position;
+}
+
+/**
+ * \fn 				\c char* createAnArrayOfChar( \c char* \a information , \c int \a size )
+ * \brief			Create an array for strings
+ * \date 			\p November 2012
+ * \return			\p \a information  an array of char newly allocate \B
+ * \return 			   \a NULL  the allocation failed				
+ * \author			\p Chaymae
+ * \details 		\p This function allows to create an array of String, 
+ *					   and return the new array \a information
+ */
 
 char* createAnArrayOfChar(char* information, int size) {
 	information = (char*)calloc(size, sizeof(char));
@@ -10,13 +49,71 @@ char* createAnArrayOfChar(char* information, int size) {
 	return information;
 }
 
-int* initArrayOfInt(int* isEmpty, int size) {
-	int i;	size = NB_TAGS+1;
-	for(i=0 ; i<size ; i++) {
-		isEmpty[i] = 0;
-	}
-	return isEmpty;
+/**
+ * \fn 				\c void freeArrayOfChar( \c char* \c * \a array )
+ * \brief			Free the memory allocated
+ * \param			\c char* \a array  an array of char
+ * \date 			\p November
+ * 					2012
+ * \author			\p Me and you
+ * \details 		\p Free the memory allocated by a simple array of char
+ */
+
+void freeArrayOfChar(char* array) {
+	free(array);
+	array = NULL;
 }
+
+
+/**
+ * \fn 				\c char* \c * allocateDoubleArrayOfChar( \c char* \c * \a array , \c int \a size )
+ * \brief			Allocate memory for a bouble array of char
+ * \param			\c char* \c * \a array  an array of char
+ * \param			\c int \a size  the size of the array
+ * \date 			\p December
+ * 					2012
+ * \author			\p Chaymae & Martine
+ * \details 		\p This function allows to create a double \a array of char depending on the \a size
+ */
+
+char* * allocateDoubleArrayOfChar(char* * array, int size) {
+	array = (char**)calloc(size, sizeof(char*));
+	if (array == NULL) {
+		fprintf(stderr, "The array cannot be allocate\n");
+		return NULL;
+	}
+	return array;
+}
+
+/**
+ * \fn 				\c void freeDoubleArrayOfChar( \c char* \c * \a array , \c int \a size )
+ * \brief			Free the memory allocated by a double array
+ * \param			\c char* \c * \a array  the array to free
+ * \param			\c int \a size  the size of the double array
+ * \author			\p Chaymae
+ * \details 		\p This function allows to free all the memory allocated 
+ *					for a double \a array of char
+ */
+
+void freeDoubleArrayOfChar(char* * array, int size) {
+	int i = 0;
+	for (i=0 ; i<size ; i++) {
+		free(array[i]);
+		array[i] = NULL;
+	}
+	free(array);
+	array = NULL;
+}
+
+/**
+ * \fn 				\c TagArray allocateNewTagArray( \c TagArray \a arrayOfTags )
+ * \brief			Allocate memory for one block
+ * \param			\c TagArrays \a arrayOfTags  a block from the list of blocks of a file
+ * \version			\p 1.0
+ * \author			\p Chaymae & Martine
+ * \details 		\p This function allows to allocate memory for one 
+ block
+ */
 
 TagArray allocateNewTagArray(TagArray arrayOfTags) {
 	int size = NB_TAGS+1;
@@ -33,24 +130,16 @@ TagArray allocateNewTagArray(TagArray arrayOfTags) {
 	return arrayOfTags;
 }
 
-TagArray stockInformation(TagArray arrayOfTags, char c, int index, int position) {
-	int j = 0;
-	if (arrayOfTags->information[index] == NULL) {
-		arrayOfTags->information[index] = createAnArrayOfChar(arrayOfTags->information[index], 150);
-		if (arrayOfTags->information[index] == NULL) {
-			while (j < index) {
-				free(arrayOfTags->information[j]);
-				arrayOfTags->information[j] = NULL;
-			}
-			free(arrayOfTags->information);
-			arrayOfTags->information = NULL;
-			free(arrayOfTags);
-			arrayOfTags = NULL;
-		}
-	}
-	arrayOfTags->information[index][position] = c;
-	return arrayOfTags;
-}
+/**
+ * \fn 				\c void freeTagArray( \c TagArray \a arrayOfTags )
+ * \brief			Free one block
+ * \param			\c TagArrays \a arrayOfTags  a block from the list of blocks of a file
+ * \version			\p 1.0
+ * \date 			\p December
+ * 					2012
+ * \author			\p Chaymae & Martine
+ * \details 		\p Free all the memory allocated for a block
+ */
 
 void freeTagArray(TagArray arrayOfTags) {
 	int i;
@@ -62,374 +151,4 @@ void freeTagArray(TagArray arrayOfTags) {
 	arrayOfTags->information = NULL;
 	free(arrayOfTags);
 	arrayOfTags = NULL;
-}
-
-int displayTagArray(TagArray arrayOfTags) {
-	int i;
-	FILE* text = NULL;
-	text = fopen("display.html", "w");
-    if (text == NULL) {
-    	return -1;
-    }
-   	for (i=0 ; i<NB_TAGS+1 ; i++) {
-    	fprintf (text, "%s\n", arrayOfTags->information[i]);	
-	}
-	fclose(text);
-	return 0;
-}
-/*
-void managingOptions() {
-	
-}
-*/
-int readFile(char* fileName) {
-	FILE* file = NULL;
- 	char string[SIZE];
- 	int j, i = 0, position = 0, stringNull = OFF;
- 	int isEmpty[NB_TAGS+1];
- 	int block = END, index = NB_TAGS, previousStar = 0, textStart = 0, italic = OFF, typeWriterStyle = OFF, getInfo = 0;
- 	int boldStyle = OFF, paragraphStyle = OFF, previousIndex = OFF, previousPosition = 0, previousTag = OFF, over = OFF;
- 	int c = 0;
- 	SaveTagArrays list = NULL;
- 	initArrayOfInt(isEmpty, NB_TAGS+1);
- 	list = allocateNewCell();
-    file = fopen(fileName, "r");
- 	if (file == NULL) {
-    	return -1;
-    }
- 	while (fgets(string, SIZE, file) != NULL) {
- 		i = 0;
- 		while (string[i] != '\0') {
- 			switch (string[i]) {
- 				case '/' :
- 					over = OFF;
- 					switch (string[i+1]) {
- 						case '*' :
- 						 	if (string[i+2] == '*') {printf("c = %d\n", c);
- 						 		list = addNewCell1(list, c);
- 						 		initArrayOfInt(isEmpty, NB_TAGS+1);
- 						 		block = START_TYPE_1;
- 						 		stringNull = ON;
- 						 		previousIndex = OFF;
- 						 		i += 2; 
- 						 	}
- 						break;
- 						case '/' :
- 							if (string[i+2] == '/') {printf("c = %d\n", c);
- 								list = addNewCell1(list, c);
-								block = START_TYPE_2;
-								initArrayOfInt(isEmpty, NB_TAGS+1);
- 						 		stringNull = OFF;
-								if (string[i+3] == '\n') {
-									getInfo = 1;
-								}
-								i += 2;
-							}
- 						break;
- 					}
- 				break;
- 				case '*' :
- 					if (string[i+1] == '\n') {
- 						stringNull = ON;
-						getInfo = 1;
-					}
- 					previousStar = 1;
- 					previousTag = OFF;
- 					if (string[i+1] == '/') {
- 						stringNull = OFF;
-						block = END;
- 					}
- 				break;
- 				case 92 :
- 					stringNull = OFF;
- 					if (block == START_TYPE_2) {
- 						previousStar = 1;
- 					}
- 					switch (previousStar) {
- 						case OFF :
-	 						string[i+1] = '\0';
-	 					break;
-	 					case ON :
-							switch (string[i+1]) {
-								case 'a' :
-									if (string[i+2] == ' ' || string[i+2] == '\t') {
-										if (previousTag == OFF) {
-											index = previousIndex;
-											position = previousPosition;
-											position = putALineBreak(list->arrayOfTags[c], index, position);
-										}
-										list->arrayOfTags[c] = stockInformation(list->arrayOfTags[c], string[i], index, position);
-										position = putInItalic(list->arrayOfTags[c], index, position);
-										i += 2;
-										italic = ON;
-									}
-									else {
-										previousTag = ON;
-										index = recognizeATag(string, i+1);
-										while (string[i] != ' ' && string[i] != '\0' && string[i] != '\t') {
-											fprintf(stdout, "%c", string[i]);
-											i++;
-										} 
-										if (isEmpty[index] != 0) {
-											fprintf(stdout, "%d   %d\n", previousIndex, previousPosition);
-											previousTag = OFF;
-										}
-										fprintf(stdout, "------------> %d\n", index);
-									}
-								break;
-								case 'b' :
-									if (string[i+2] == ' ' || string[i+2] == '\t') {
-										if (previousTag == OFF) {
-											index = previousIndex;
-											position = previousPosition;
-											position = putALineBreak(list->arrayOfTags[c], index, position);
-										}
-										list->arrayOfTags[c] = stockInformation(list->arrayOfTags[c], string[i], index, position);
-										position = putInBoldStyle(list->arrayOfTags[c], index, position);
-										i += 2;
-										boldStyle = ON;
-									}
-									else {
-										previousTag = ON;
-										index = recognizeATag(string, i+1);
-										while (string[i] != ' ' && string[i] != '\0' && string[i] != '\t') {
-											fprintf(stdout, "%c", string[i]);
-											i++;
-										} 
-										if (isEmpty[index] != 0) {
-											fprintf(stdout, "%d   %d\n", previousIndex, previousPosition);
-											previousTag = OFF;
-										}
-										fprintf(stdout, "------------> %d\n", index);
-									}
-								break;
-								case 'c' :
-									if (string[i+2] == ' ' || string[i+2] == '\t') {
-										if (previousTag == OFF) {
-											index = previousIndex;
-											position = previousPosition;
-											position = putALineBreak(list->arrayOfTags[c], index, position);
-										}
-										list->arrayOfTags[c] = stockInformation(list->arrayOfTags[c], string[i], index, position);
-										position = putInTypeWriterStyle(list->arrayOfTags[c], index, position);
-										i += 2;
-										typeWriterStyle = ON;
-									}
-									else {
-										previousTag = ON;
-										index = recognizeATag(string, i+1);
-										while (string[i] != ' ' && string[i] != '\0' && string[i] != '\t') {
-											fprintf(stdout, "%c", string[i]);
-											i++;
-										}
-										if (isEmpty[index] != 0) {
-											fprintf(stdout, "%d   %d\n", previousIndex, previousPosition);
-											previousTag = OFF;
-										} 
-										fprintf(stdout, "------------> %d\n", index);
-									}
-								break;
-								case 'e' :
-									if (string[i+2] == ' ' || string[i+2] == '\t') {
-										if (previousTag == OFF) {
-											index = previousIndex;
-											position = previousPosition;
-											position = putALineBreak(list->arrayOfTags[c], index, position);
-										}
-										list->arrayOfTags[c] = stockInformation(list->arrayOfTags[c], string[i], index, position);
-										position = putInItalic(list->arrayOfTags[c], index, position);
-										i += 2;
-										italic = ON;
-									}
-									else {
-										previousTag = ON;
-										index = recognizeATag(string, i+1);
-										while (string[i] != ' ' && string[i] != '\0' && string[i] != '\t') {
-											fprintf(stdout, "%c", string[i]);
-											i++;
-										} 
-										if (isEmpty[index] != 0) {
-											fprintf(stdout, "%d   %d\n", previousIndex, previousPosition);
-											previousTag = OFF;
-										}
-										fprintf(stdout, "------------> %d\n", index);
-									}
-								break;
-								case 'p' :
-									if (string[i+2] == ' ' || string[i+2] == '\t') {
-										if (previousTag == OFF) {
-											index = previousIndex;
-											position = previousPosition;
-											position = putALineBreak(list->arrayOfTags[c], index, position);
-										}
-										list->arrayOfTags[c] = stockInformation(list->arrayOfTags[c], string[i], index, position);
-										position = putInParagraphStyle(list->arrayOfTags[c], index, position);
-										i += 2;
-										paragraphStyle = ON;
-									}
-									else {
-										previousTag = ON;
-										index = recognizeATag(string, i+1);
-										while (string[i] != ' ' && string[i] != '\0' && string[i] != '\t') {
-											fprintf(stdout, "%c", string[i]);
-											i++;
-										} 
-										if (isEmpty[index] != 0) {
-											fprintf(stdout, "%d   %d\n", previousIndex, previousPosition);
-											previousTag = OFF;
-										}
-										fprintf(stdout, "------------> %d\n", index);
-									}
-								break;
-								default :
-									getInfo = 0;
-									previousTag = ON;
-									index = recognizeATag(string, i+1);
-									if (index == -1)	index = NB_TAGS;
-									while (string[i] != ' ' && string[i] != '\0' && string[i] != '\t') {
-										fprintf(stdout, "%c", string[i]);
-										i++;
-									} 
-									if (isEmpty[index] != 0) {
-										fprintf(stdout, "%d   %d\n", previousIndex, previousPosition);
-										previousTag = OFF;
-									}
-									fprintf(stdout, "(------------>) %d\n", index);
-								break;
-							}
- 						break;
- 					}
- 				break;
- 				case ';' :
- 					if (block == END && over == OFF) {
- 						if (list->arrayOfTags[c]->information[FN] == NULL) {
-	 						for(j=0 ; j<i ;j++) {
-	 							fprintf(stdout, "%c", string[j]);
-	 							list->arrayOfTags[c] = stockInformation(list->arrayOfTags[c], string[j], FN, position);
-	 							position++;
-	 						}
-	 						over = ON;
-	 					}
-	 					c++;
- 					}
- 				break;
- 				case '{' :
- 					if (block == END && over == OFF) {
- 						if (list->arrayOfTags[c]->information[FN] == NULL) {
-	 						for(j=0 ; j<i ;j++) {
-	 							fprintf(stdout, "%c", string[j]);
-	 							list->arrayOfTags[c] = stockInformation(list->arrayOfTags[c], string[j], FN, position);
-	 							position++;
-	 						}
-	 						over = ON;
-	 					}
-	 					c++;
- 					}
- 				break;
- 				default :
- 					if(getInfo == 1)	stringNull = 2;
- 					if (block != END && over == OFF) {
- 						if (string[i] != ' ' && string[i] != '\t') {
- 							textStart = ON;
- 						}
- 						if (textStart == ON) {
- 							switch (string[i]) {
- 								case ' ' :
- 									if (string[i+1] == ' ' && string[i+2] != '\t' && string[i+2] != ' ') {
- 										list->arrayOfTags[c] = stockInformation(list->arrayOfTags[c], ':', index, position);
-			 							position++;
- 									}
- 								break;
- 								case '\t' :
- 									if (string[i+2] != '\t' && string[i+2] != ' ') {
- 										list->arrayOfTags[c] = stockInformation(list->arrayOfTags[c], ':', index, position);
-			 							position++;
- 									}
- 								break;
- 							}
- 							if (previousTag == OFF) {
- 								if (stringNull != 2 && previousIndex != OFF) {printf("---------------------->    TEST\n");
-	 								index = previousIndex;
-	 								position = previousPosition;
-	 								position = putALineBreak(list->arrayOfTags[c], index, position);
- 								}
- 								if (stringNull == 2) {
- 									index = 4;
- 									position = isEmpty[index]; 
- 									list->arrayOfTags[c] = stockInformation(list->arrayOfTags[c], ' ', index, position);
- 									position++;
- 								}
- 								if (italic == ON) {
- 									position = putInItalic(list->arrayOfTags[c], index, position);
- 								}
- 								if (boldStyle == ON) {
- 									position = putInBoldStyle(list->arrayOfTags[c], index, position);
- 								}
- 								if (typeWriterStyle == ON) {
- 									position = putInTypeWriterStyle(list->arrayOfTags[c], index, position);
- 								}
- 								if (paragraphStyle == ON) {
- 									position = putInParagraphStyle(list->arrayOfTags[c], index, position);
- 								}
- 								previousTag = ON;
- 							}
- 							if (italic == ON && string[i] == ' ') {
- 								position = endOfItalic(list->arrayOfTags[c], index, position);
-					 			italic = OFF;
- 							}
- 							if (typeWriterStyle == ON && string[i] == ' ') {
- 								position = endOfTypeWriterStyle(list->arrayOfTags[c], index, position);
-					 			typeWriterStyle = OFF;
- 							}
- 							if (boldStyle == ON && string[i] == ' ') {
- 								position = endOfBoldStyle(list->arrayOfTags[c], index, position);
-					 			boldStyle = OFF;
- 							}
-			 				list->arrayOfTags[c] = stockInformation(list->arrayOfTags[c], string[i], index, position);
- 							position++;
- 						}
- 					}	
- 				break;
- 			}
-			i++;
- 		}
- 		isEmpty[index] = position;
- 		if (block == START_TYPE_2) {
- 			previousStar = OFF;
- 			block = END;
- 			previousTag = OFF;
- 		}
- 		if (italic == ON) {
- 			endOfItalic(list->arrayOfTags[c], index, position);
-			italic = OFF;
- 		}
- 		if (typeWriterStyle == ON) {
- 			endOfTypeWriterStyle(list->arrayOfTags[c], index, position);
-			typeWriterStyle = OFF;
- 		}
- 		if (boldStyle == ON) {
- 			endOfBoldStyle(list->arrayOfTags[c], index, position);
-			boldStyle = OFF;
- 		}
- 		if (paragraphStyle == ON) {
- 			endOfParagraphStyle(list->arrayOfTags[c], index, position);
-			paragraphStyle = OFF;
- 		}
- 		/*if (over == ON) {
- 			over = 2;
- 			c++;
- 			printf("C on\n");
- 		}*/
- 		previousIndex = index;
-		previousPosition = position;
-		position = 0;
- 		textStart = OFF;
- 		index = NB_TAGS;
- 		stringNull = OFF;
- 	}
- 	displayTagArray(list->arrayOfTags[1]);
- 	/*displayTheListOfTheSavingTagArray(list);*/
- 	freeSaveTagArray(list);
- 	fclose(file);
- 	return 0;
 }
